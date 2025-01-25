@@ -2,13 +2,11 @@ import time
 
 import streamlit as st
 from openai import OpenAI
-from config import PERSONAS_PATH, AVAILABLE_MODELS, DEFAULT_MODEL
+from config import PERSONAS_PATH, AVAILABLE_MODELS, DEFAULT_MODEL, BOT_AVATAR, USER_AVATAR
 from utils import load_conversations, save_conversations, load_personas, save_personas
 
 # Remove the hardcoded API key and use the one from config
 client = OpenAI(api_key="None", base_url="http://10.0.3.1:1234/v1")
-
-# Rest of your current code, but update the paths to use config variables
 
 # Initialize or load conversations
 if 'conversations' not in st.session_state:
@@ -143,9 +141,9 @@ with st.sidebar:
     st.markdown("---")
     st.header("Model Selection")
 
-    # Selection box to choose the OpenAI model
+    # Selection box to choose the model
     selected_model = st.selectbox(
-        "Select OpenAI Model",
+        "Select Model",
         options=AVAILABLE_MODELS,
         index=AVAILABLE_MODELS.index(st.session_state.model_version) if st.session_state.model_version in AVAILABLE_MODELS else 0
     )
@@ -214,11 +212,11 @@ with st.sidebar:
             save_personas(st.session_state.personas, PERSONAS_PATH)
 
 # Main area for the selected conversation
-st.title('Local Chatbot')
+st.title('Athena Chat v1.0.1')
 
 if st.session_state.selected_convo is not None:
     # User message input at the top
-    message = st.chat_input("Input")
+    message = st.chat_input("Enter your message here:")
     # Send button
     if message:
         send_message(st.session_state.selected_convo, message)
@@ -228,7 +226,11 @@ if st.session_state.selected_convo is not None:
         for message in st.session_state.conversations[st.session_state.selected_convo]:
             role = message["role"]
             content = message["content"]
-            with st.chat_message(name=role.capitalize()):
-                st.markdown(content)
+            if role == "assistant":
+                with st.chat_message(name=role.lower(), avatar=BOT_AVATAR):
+                    st.markdown(content)
+            else:
+                with st.chat_message(name=role.lower(), avatar=USER_AVATAR):
+                    st.markdown(content)
 else:
-    st.write("Select or create a conversation to start chatting.")
+    st.write("Welcome to Athena Chat v1.0.1. Select or create a conversation to start chatting.")
