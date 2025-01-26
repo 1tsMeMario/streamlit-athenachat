@@ -38,7 +38,7 @@ def save_personas(personas, path: Path):
         json.dump(personas, f, indent=2)
 
 
-client = OpenAI(api_key="None", base_url="https://l7crq0c7-1234.use.devtunnels.ms/v1")
+client = OpenAI(api_key="None", base_url="http://10.0.3.1:1234/v1")
 
 if 'conversations' not in st.session_state:
     load_conversations()
